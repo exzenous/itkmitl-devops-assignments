@@ -1,0 +1,46 @@
+services:
+  ratings-serv:
+    build: ./ratings
+    image: ghcr.io/exzenous/bookinfo-ratings:dev
+    ports:
+      - "8080:8080"
+    environment: 
+      SERVICE_VERSION: v2
+      MONGO_DB_URL: 'mongodb://mongodb:27017/ratings'
+      MONGO_DB_USERNAME: ratings
+      MONGO_DB_PASSWORD: pass1234
+
+  mongodb:
+    image: bitnami/mongodb:5.0.2-debian-10-r2
+    volumes:
+      - './ratings/databases:/docker-entrypoint-initdb.d'
+    environment:
+      MONGODB_ROOT_PASSWORD: pass1234
+      MONGODB_USERNAME: ratings
+      MONGODB_PASSWORD: pass1234
+      MONGODB_DATABASE: ratings
+    
+  reviews-serv:
+    build: ./reviews
+    image: ghcr.io/exzenous/bookinfo-reviews:dev
+    ports:
+      - "8082:9080"
+    environment:
+      ENABLE_RATINGS: "true"
+      RATINGS_SERVICE: http://ratings-serv:8080/ratings
+  
+  details-serv:
+    build: ./details
+    image: ghcr.io/exzenous/bookinfo-details:dev
+    ports:
+      - "8081:9080"
+  
+  productpage:
+    build: ./productpage
+    image: ghcr.io/exzenous/bookinfo-productpage:dev
+    ports:
+      - "8083:9080"
+    environment:
+      DETAILS_HOSTNAME: http://details-serv:9080/
+      RATINGS_HOSTNAME: http://ratings-serv:8080/
+      REVIEWS_HOSTNAME: http://reviews-serv:9080/
