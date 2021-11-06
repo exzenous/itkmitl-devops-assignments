@@ -20,4 +20,4 @@ kubectl create configmap bookinfo-dev-ratings-mongodb-initdb \
 helm install -f k8s/helm-values/values-bookinfo-dev-ratings-mongodb.yaml \
   bookinfo-dev-ratings-mongodb bitnami/mongodb --version 10.28.4
 
-# It must be ready to "kubectl apple" Ratings Service
+# It must be ready to "kubectl apply" Ratings Service
